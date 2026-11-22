@@ -283,9 +283,54 @@ local function getVersion()
     return C_AddOns.GetAddOnMetadata(addonName, "Version") or "unknown"
 end
 
+local function getWhereNextMessage()
+    local rank, maximum = readLockpickingSkill()
+    if not rank or rank < 1 then
+        return "Lockpicking skill is unavailable. Learn Lockpicking or wait for your skill to load."
+    end
+
+    local currentZone = getCurrentZone()
+    local areas = {}
+    for _, zone in ipairs(addon.Zones) do
+        local zoneBreakpoint
+        for _, location in ipairs(addon.LocationsByMapID[zone.mapID]) do
+            if location.skillFrom <= rank and rank < location.skillTo then
+                zoneBreakpoint = math.max(zoneBreakpoint or 0, location.skillTo)
+            end
+        end
+        if zoneBreakpoint then
+            local area = { name = zone.name, breakpoint = zoneBreakpoint }
+            if zone == currentZone then
+                table.insert(areas, 1, area)
+            else
+                areas[#areas + 1] = area
+            end
+        end
+    end
+
+    if #areas == 0 then
+        return string.format("No cataloged route offers skill-ups at Lockpicking %d.", rank)
+    end
+    if rank >= maximum then
+        return string.format("Lockpicking is capped at %d/%d. Level up to raise your cap before continuing.", rank, maximum)
+    end
+
+    local destination = areas[1].name
+    local breakpoint = areas[1].breakpoint
+    if areas[2] then
+        destination = "either " .. destination .. " or " .. areas[2].name
+        breakpoint = math.min(breakpoint, areas[2].breakpoint)
+    end
+    return string.format("Go to %s until Lockpicking %d.%s", destination, math.min(breakpoint, maximum),
+        maximum < breakpoint and " Level up to raise your cap when you get there." or "")
+end
+
 function addon.OpenMinimapMenu(owner)
     MenuUtil.CreateContextMenu(owner, function(_, root)
         root:CreateTitle("Lockpick Atlas v" .. getVersion())
+        root:CreateButton("Where Next?", function()
+            DEFAULT_CHAT_FRAME:AddMessage("Lockpick Atlas: " .. getWhereNextMessage())
+        end)
         root:CreateButton("Add Coords", addon.OpenAddCoords)
         for _, entry in ipairs(MARKER_SETTINGS) do
             root:CreateCheckbox(entry.label, function(key)
@@ -315,6 +360,43 @@ local function addCheckbox(category, key, label, tooltip)
     Settings.CreateCheckbox(category, setting, tooltip)
 end
 
+local function openRemovePersonalCoords(owner)
+    MenuUtil.CreateContextMenu(owner, function(_, root)
+        root:CreateTitle("Remove Personal Coords")
+        local mapIDs = {}
+        for mapID in pairs(addon.DB.personalPins) do
+            mapIDs[#mapIDs + 1] = mapID
+        end
+        table.sort(mapIDs)
+
+        if #mapIDs == 0 then
+            root:CreateTitle("No saved personal pins")
+        end
+        for _, mapID in ipairs(mapIDs) do
+            local map = C_Map.GetMapInfo(mapID)
+            local name = map and map.name
+            local zoneMenu = root:CreateButton(name and not isSecret(name) and name or ("Map " .. mapID))
+            for _, point in ipairs(addon.DB.personalPins[mapID]) do
+                zoneMenu:CreateButton(string.format("%.2f, %.2f", point.x * 100, point.y * 100),
+                    addon.RemovePersonalPin, { mapID = mapID, personalPoint = point })
+            end
+        end
+    end)
+end
+
+LockpickAtlasPersonalPinsSettingsMixin = {}
+
+function LockpickAtlasPersonalPinsSettingsMixin:OnLoad()
+    self.AddCoords:SetScript("OnClick", addon.OpenAddCoords)
+    self.RemoveCoords:SetScript("OnClick", openRemovePersonalCoords)
+end
+
+LockpickAtlasWhereNextSettingsMixin = {}
+
+function LockpickAtlasWhereNextSettingsMixin:Init()
+    self.Message:SetText("|cffffd100Where Next:|r " .. getWhereNextMessage())
+end
+
 local function createOptions()
     if not Settings then return end
 
@@ -326,7 +408,16 @@ local function createOptions()
     addCheckbox(category, "showMinimapButton", "Minimap button", "Show the draggable Lockpick Atlas button beside the minimap.")
     addCheckbox(category, "warnAtSkillCap", "Skill cap warning", "Warn once per area and cap when the route can skill up beyond your current cap.")
     local layout = SettingsPanel and SettingsPanel:GetLayout(category)
-    if layout and CreateSettingsButtonInitializer then
+    if layout and Settings.CreateElementInitializer then
+        local personalPins = Settings.CreateElementInitializer("LockpickAtlasPersonalPinsSettingsTemplate", { name = "Personal pins" })
+        personalPins:AddSearchTags("Personal pins", "Add Coords", "Remove Personal Coords")
+        layout:AddInitializer(personalPins)
+
+        local whereNext = Settings.CreateElementInitializer("LockpickAtlasWhereNextSettingsTemplate", { name = "Where Next" })
+        whereNext:AddSearchTags("Where Next")
+        function whereNext:GetExtent() return 54 end
+        layout:AddInitializer(whereNext)
+    elseif layout and CreateSettingsButtonInitializer then
         layout:AddInitializer(CreateSettingsButtonInitializer(
             "Personal pins",
             "Add Coords",

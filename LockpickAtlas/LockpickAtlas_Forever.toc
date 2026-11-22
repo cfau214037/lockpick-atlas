@@ -3,7 +3,7 @@
 ## IconTexture: Interface\AddOns\LockpickAtlas\Textures\Logo
 ## Notes: Find reported footlocker routes and avoid leveling past your current skill cap.
 ## Author: Chris
-## Version: 0.2.7
+## Version: 0.2.8
 ## Game: forever
 ## Dependencies: Blizzard_MapCanvas
 ## SavedVariables: LockpickAtlasDB, LockpickAssistDB
@@ -12,3 +12,4 @@ Locations.lua
 MapPins.lua
 MapPin.xml
 Core.lua
+Settings.xml

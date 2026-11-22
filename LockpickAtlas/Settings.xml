@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Frame name="LockpickAtlasPersonalPinsSettingsTemplate" mixin="LockpickAtlasPersonalPinsSettingsMixin" virtual="true">
+        <Size x="0" y="35"/>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString inherits="GameFontNormal" text="Personal pins">
+                    <Anchors>
+                        <Anchor point="LEFT" x="28"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="AddCoords" inherits="UIPanelButtonTemplate" text="Add Coords">
+                <Size x="120" y="22"/>
+                <Anchors>
+                    <Anchor point="LEFT" x="280"/>
+                </Anchors>
+            </Button>
+            <Button parentKey="RemoveCoords" inherits="UIPanelButtonTemplate" text="Remove Personal Coords">
+                <Size x="160" y="22"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.AddCoords" relativePoint="RIGHT" x="8"/>
+                </Anchors>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+    </Frame>
+    <Frame name="LockpickAtlasWhereNextSettingsTemplate" mixin="LockpickAtlasWhereNextSettingsMixin" virtual="true">
+        <Size x="0" y="54"/>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString parentKey="Message" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="28" y="-10"/>
+                        <Anchor point="BOTTOMRIGHT" x="-28"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnShow method="Init"/>
+        </Scripts>
+    </Frame>
+</Ui>

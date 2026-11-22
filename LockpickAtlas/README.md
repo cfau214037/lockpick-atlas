@@ -5,12 +5,15 @@ A small WoW: Forever addon that marks reported lockbox route locations and warns
 ## Current features
 
 - World-map pins on each route's zone map, plus nearby minimap markers.
-- Left-click the draggable minimap icon for settings. Its right-click menu shows the version, **Add Coords**, the map marker toggles, and **Settings**.
+- Left-click the draggable minimap icon for settings. Its right-click menu shows the version, **Where Next?**, **Add Coords**, the map marker toggles, and **Settings**.
+- Select **Where Next?** to see up to two leveling areas and a target lockpicking skill in your chat window.
+- The bottom of Lockpick Atlas settings shows the same **Where Next** message.
 - A toggle for the capped-skill warning.
 - `/lpa options` opens settings. `/lpa status` shows the version, current skill, and toggles. `/lockpickatlas` accepts the same commands.
 - Route points begin at Tyr's Hand and cover the common earlier footlocker areas.
 - Right-click the minimap key icon and select **Add Coords**, or open **Add Coords** in Lockpick Atlas settings. The box starts with your current coordinates. Edit them or click **Add Pin** to save a personal pin for the zone named in the dialog. Personal pins appear on both maps and are saved locally for your WoW account.
 - Right-click a blue personal pin on the world map or minimap and select **Remove Pin**. Gold route pins are built in.
+- In settings, select **Remove Personal Coords**, then choose a zone and coordinates to remove a saved blue pin.
 - Type `/lpa mark` to save your current position immediately. Type `/lpa unmark` while standing nearby to remove the closest personal pin.
 
 The cap warning reads Lockpicking's current rank and `maxRank` from Forever's skill API. For example, at `240/240` in a route with a higher skill ceiling, it says to level up before continuing. It only warns once for each area/cap combination.

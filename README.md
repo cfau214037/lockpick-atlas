@@ -6,7 +6,7 @@ A rogue lockpicking guide for **World of Warcraft: Forever**. Find reported foot
 
 ## Install
 
-Copy the [`LockpickAtlas`](LockpickAtlas) folder to your Forever client's `Interface/AddOns` folder, then enable **Lockpick Atlas** in the AddOn List. Right-click the compass beside the minimap to add coordinates, toggle markers, or open Settings.
+Copy the [`LockpickAtlas`](LockpickAtlas) folder to your Forever client's `Interface/AddOns` folder, then enable **Lockpick Atlas** in the AddOn List. Right-click the compass beside the minimap and select **Where Next?** for leveling areas and your next lockpicking target. The menu also lets you add coordinates, toggle markers, and open Settings.
 
 See the [addon guide](LockpickAtlas/README.md) for commands, how to carry over pins from Lockpick Assist, and the sources for the built-in routes.
 
